@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Yellow Banana Walkthrough</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,500;0,700;0,800;1,500&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: full-bleed 3D walkway; a thin top bar with a position track, a bottom bar of stop chips and a walk pad, and a bottom sheet for each work. */
+:root {
+  --ui-bg: rgba(251, 248, 238, 0.94);
+  --ui-solid: #fbf8ee;
+  --ui-fg: #1f1c14;
+  --ui-muted: #5f5947;
+  --ui-line: rgba(31, 28, 20, 0.14);
+  --accent: #e8b931;
+  --accent-ink: #2b2208;
+  --scene: #2a2925;
+  --f-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ui-bg: rgba(28, 26, 21, 0.92);
+    --ui-solid: #1c1a15;
+    --ui-fg: #f3eedf;
+    --ui-muted: #b8b09a;
+    --ui-line: rgba(243, 238, 223, 0.16);
+    --accent: #f0c54a;
+    --accent-ink: #231b05;
+    --scene: #1a1916;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ui-bg: rgba(28, 26, 21, 0.92);
+  --ui-solid: #1c1a15;
+  --ui-fg: #f3eedf;
+  --ui-muted: #b8b09a;
+  --ui-line: rgba(243, 238, 223, 0.16);
+  --accent: #f0c54a;
+  --accent-ink: #231b05;
+  --scene: #1a1916;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body {
+  margin: 0; overflow: hidden; background: var(--scene); color: var(--ui-fg);
+  font-family: var(--f-body); -webkit-tap-highlight-color: transparent;
+}
+#scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+#scene:active { cursor: grabbing; }
+.bar {
+  position: fixed; left: 0; right: 0; z-index: 5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  pointer-events: none;
+}
+.bar > * { pointer-events: auto; }
+#top { top: 0; padding-top: calc(env(safe-area-inset-top, 0px) + 12px); }
+.titleRow { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand {
+  background: var(--ui-bg); border: 1px solid var(--ui-line); border-radius: 12px;
+  padding: 8px 12px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); min-width: 0;
+}
+.brand b { font-family: var(--f-display); font-weight: 800; font-size: 15px; letter-spacing: 0.01em; display: block; }
+.brand span { font-size: 12px; color: var(--ui-muted); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.iconBtn {
+  flex: none; width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--ui-line);
+  background: var(--ui-bg); color: var(--ui-fg); font: 600 16px var(--f-display); cursor: pointer;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+#track {
+  margin-top: 10px; background: var(--ui-bg); border: 1px solid var(--ui-line); border-radius: 12px;
+  padding: 8px 12px 6px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.rail { position: relative; height: 6px; background: var(--ui-line); border-radius: 3px; }
+.tick { position: absolute; top: -2px; width: 2px; height: 10px; background: var(--ui-muted); transform: translateX(-1px); }
+#dot {
+  position: absolute; top: 50%; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--accent); border: 2px solid var(--accent-ink); transform: translate(-50%, -50%);
+}
+.railLabels { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: var(--ui-muted); letter-spacing: 0.02em; }
+.railLabels b { color: var(--ui-fg); font-weight: 600; }
+
+#bottom { bottom: 0; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); display: flex; align-items: flex-end; gap: 10px; }
+#chips {
+  flex: 1; min-width: 0; display: flex; gap: 6px; overflow-x: auto; padding: 4px 2px; scrollbar-width: none;
+}
+#chips::-webkit-scrollbar { display: none; }
+.chip {
+  flex: none; border: 1px solid var(--ui-line); background: var(--ui-bg); color: var(--ui-fg);
+  border-radius: 999px; padding: 8px 12px; font: 500 13px var(--f-body); cursor: pointer;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: flex; gap: 6px; align-items: baseline;
+}
+.chip i { font-style: normal; font-family: var(--f-display); font-weight: 700; font-size: 11px; color: var(--ui-muted); letter-spacing: 0.04em; }
+.chip.on { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.chip.on i { color: var(--accent-ink); }
+.pad { flex: none; display: grid; grid-template-columns: 52px; gap: 6px; }
+.padBtn {
+  width: 52px; height: 52px; border-radius: 14px; border: 1px solid var(--ui-line);
+  background: var(--ui-bg); color: var(--ui-fg); font: 700 18px var(--f-display); cursor: pointer;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); user-select: none; -webkit-user-select: none; touch-action: none;
+}
+.padBtn.walk { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.padBtn:active { transform: scale(0.96); }
+button:focus-visible, label:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+#sheet {
+  position: fixed; z-index: 8; left: 0; right: 0; bottom: 0; margin: 0 auto; max-width: 560px;
+  max-height: 74%; overflow-y: auto; background: var(--ui-solid); color: var(--ui-fg);
+  border-radius: 18px 18px 0 0; border: 1px solid var(--ui-line); border-bottom: 0;
+  padding-block: 18px calc(env(safe-area-inset-bottom, 0px) + 18px);
+  padding-left: max(18px, env(safe-area-inset-left, 0px)); padding-right: max(18px, env(safe-area-inset-right, 0px));
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.25);
+}
+.layer { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.layer .py { font-family: var(--f-display); font-weight: 800; font-size: 34px; letter-spacing: 0.02em; line-height: 1; }
+.layer .zh { font-size: 15px; color: var(--ui-muted); }
+.layer .en { font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ui-muted); }
+#sheet h2 { font-family: var(--f-display); font-weight: 500; font-style: italic; font-size: 22px; line-height: 1.2; margin: 14px 0 4px; text-wrap: balance; }
+.who { font-size: 14px; color: var(--ui-muted); margin: 0 0 12px; }
+dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; margin: 0 0 14px; font-size: 13px; }
+dt { color: var(--ui-muted); }
+dd { margin: 0; min-width: 0; font-variant-numeric: tabular-nums; }
+.note { font-size: 15px; line-height: 1.6; margin: 0 0 16px; max-width: 62ch; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn {
+  border: 1px solid var(--ui-line); background: transparent; color: var(--ui-fg); border-radius: 10px;
+  padding: 10px 14px; font: 600 14px var(--f-body); cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+}
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+.btn input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.fine { font-size: 12px; color: var(--ui-muted); margin: 10px 0 0; line-height: 1.5; }
+
+#intro {
+  position: fixed; inset: 0; z-index: 9; display: grid; place-items: center;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: rgba(10, 10, 8, 0.38);
+}
+.introCard {
+  background: var(--ui-solid); border: 1px solid var(--ui-line); border-radius: 18px; padding: 22px;
+  max-width: 400px; width: 100%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+}
+.introCard .kicker { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ui-muted); margin: 0 0 6px; }
+.introCard h1 { font-family: var(--f-display); font-weight: 800; font-size: 30px; line-height: 1.05; margin: 0 0 10px; text-wrap: balance; }
+.introCard h1 em { font-style: normal; background: var(--accent); color: var(--accent-ink); padding: 0 6px; border-radius: 4px; }
+.introCard p { font-size: 14px; line-height: 1.55; margin: 0 0 10px; }
+.introCard ul { margin: 0 0 16px; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 14px; }
+.introCard li b { display: inline-block; min-width: 92px; font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<canvas id="scene" aria-label="3D walkway: The Yellow Banana exhibition between Funan and City Hall MRT"></canvas>
+
+<div class="bar" id="top">
+  <div class="titleRow">
+    <div class="brand"><b>The Yellow Banana</b><span>Funan ↔ City Hall MRT walkway</span></div>
+    <button class="iconBtn" id="helpBtn" aria-label="How to move around">?</button>
+  </div>
+  <div id="track" aria-hidden="true">
+    <div class="rail" id="rail"><div id="dot"></div></div>
+    <div class="railLabels"><b>Funan</b><span id="hereLabel">Funan end</span><b>City Hall MRT</b></div>
+  </div>
+</div>
+
+<div class="bar" id="bottom">
+  <div id="chips" role="toolbar" aria-label="Jump to a stop"></div>
+  <div class="pad">
+    <button class="padBtn walk" id="fwd" aria-label="Walk forward">▲</button>
+    <button class="padBtn" id="back" aria-label="Walk backward">▼</button>
+    <button class="padBtn" id="turn" aria-label="Turn around">↻</button>
+  </div>
+</div>
+
+<div id="sheet" hidden role="dialog" aria-modal="false" aria-labelledby="sheetTitle"></div>
+
+<div id="intro">
+  <div class="introCard">
+    <p class="kicker">Exhibition proposal · 3D walkthrough</p>
+    <h1>The <em>Yellow</em> Banana</h1>
+    <p>Walk the Funan to City Hall MRT walkway with the six works installed at five stops. The works are shown at their real sizes.</p>
+    <ul>
+      <li><b>Look around</b>Drag anywhere</li>
+      <li><b>Walk</b>Hold ▲ or ▼, or tap a stop below</li>
+      <li><b>Turn around</b>Tap ↻</li>
+      <li><b>Read a work</b>Tap its case</li>
+    </ul>
+    <button class="btn primary" id="startBtn">Enter the walkway</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  "use strict";
+  // ---------- Space ----------
+  var W = 7, HALF = W / 2, H = 3.6;
+  var ZF = 2.6, ZC = -72;              // Funan end, City Hall end
+  var LEN = ZF - ZC, ZMID = (ZF + ZC) / 2;
+  var ZMAX = ZF - 0.9, ZMIN = ZC + 0.9, XLIM = 2.5;
+  var EYE = 1.6;
+  var YELLOW = "#e8b931";
+  var FONT_D = "Archivo, 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif";
+  var FONT_B = "Inter, 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif";
+
+  var LAYERS = {
+    roots: { py: "Gēn", zh: "根", en: "Roots" },
+    tongues: { py: "Yǔ", zh: "语", en: "Tongues" },
+    rites: { py: "Lǐ", zh: "礼", en: "Rites" },
+    bodies: { py: "Shēn", zh: "身", en: "Bodies" },
+    belonging: { py: "Guīshǔ", zh: "归属", en: "Belonging" }
+  };
+
+  // Real sizes in metres (w, h). Case sizes include margin.
+  var WORKS = [
+    { id: "cheong", layer: "roots", side: "L", z: -12, y: 1.5, aw: 0.885, ah: 0.555, cw: 2.2, ch: 0.95,
+      artist: "Cheong Soo Pieng", artistZh: "钟泗滨", title: "Drying Salted Fish", year: "1978",
+      medium: "Chinese ink and colour on cloth", size: "55.5 × 88.5 cm (H × W)", coll: "National Gallery Singapore",
+      note: "Malay villagers painted in fine Chinese ink brushwork, joining the horizontal format of a Chinese scroll with Western easel painting. Chinese in technique, Southeast Asian in subject. It sits in a long horizontal case so it unfolds as you walk, like an unrolling scroll." },
+    { id: "chua", layer: "tongues", side: "R", z: -22.5, y: 1.3, aw: 1.53, ah: 1.12, cw: 1.89, ch: 1.48,
+      artist: "Chua Mia Tee", artistZh: "蔡名智", title: "National Language Class", year: "1959",
+      medium: "Oil on canvas", size: "112 × 153 cm (H × W)", coll: "National Gallery Singapore",
+      note: "Chinese students learning Malay, made the national language in the year Singapore attained self-government. It hangs lower than usual, at the eye level of a seated student, so you take a seat in the class." },
+    { id: "lim", layer: "rites", side: "L", z: -33.5, y: 1.55, aw: 0.68, ah: 0.68, cw: 1.1, ch: 1.1,
+      artist: "Lim Tze Peng", artistZh: "林子平", title: "Chinatown (Tai Chong Kok Pastry Shop)", year: "1983",
+      medium: "Chinese ink and colour on paper", size: "68 × 68 cm (H × W)", coll: "National Gallery Singapore",
+      note: "A traditional Chinatown pastry shop at the heart of local festive custom, recorded in Chinese ink by a Singapore-born painter. Turn around: Wu Guanzhong's painting faces it across the walkway in an identical case." },
+    { id: "wu", layer: "rites", side: "R", z: -33.5, y: 1.55, aw: 0.459, ah: 0.614, cw: 1.1, ch: 1.1,
+      artist: "Wu Guanzhong", artistZh: "吴冠中", title: "Hometown Morning", year: "1960",
+      medium: "Oil on board", size: "61.4 × 45.9 cm (H × W)", coll: "National Gallery Singapore",
+      note: "A hometown in China, by one of China's leading twentieth-century painters. Same case, same light and same height as Lim's Chinatown opposite, so neither is shown as the original. You stand between them." },
+    { id: "leewen90", layer: "bodies", side: "L", z: -44.5, y: 1.6, aw: 0.703, ah: 1.21, cw: 1.07, ch: 1.57,
+      artist: "Lee Wen", artistZh: "李文", title: "Yellow Man, Where are you Going?", year: "1990",
+      medium: "Acrylic on canvas", size: "121 × 70.3 cm (H × W)", coll: "Singapore Art Museum",
+      note: "Painted just before Lee left to study in London, where he was mistaken for a mainland Chinese. The yellow figure anticipates his Yellow Man performances. The case glass layers your own reflection over the painted body." },
+    { id: "no11", layer: "belonging", side: "R", z: -56, y: 1.5, aw: 1.448, ah: 1.016, cw: 1.8, ch: 1.38,
+      artist: "Lee Wen", artistZh: "李文", title: "Journey of a Yellow Man No. 11: Multi-culturalism", year: "1997",
+      medium: "Inkjet print on archival paper (performance documentation)", size: "101.6 × 144.8 cm (H × W)", coll: "National Gallery Singapore",
+      note: "At The Substation in 1997, Lee spelled out C, M, I and O in rice, destroyed the letters, then washed the yellow off his body in a small tub. The print sits beside the archival video; the audio plays on your phone through the QR code." }
+  ];
+
+  var REMARKS = {
+    roots: [{ en: "“So you’re from China?”" }, { py: "Nǐ bú shì zhēnzhèng de zhōngguó rén.", zh: "你不是真正的中国人。", en: "“You’re not really from China.”" }],
+    tongues: [{ en: "“Wow, your English is so good!”" }, { py: "Nǐ de huáwén zěnme zhème chà?", zh: "你的华文怎么这么差？", en: "“Why is your Chinese so bad?”" }],
+    rites: [{ en: "“Is that a Chinese thing?”" }, { py: "Nǐ bù zhīdào wǒmen wèishénme zhèyàng zuò ma?", zh: "你不知道我们为什么这样做吗？", en: "“Don’t you know why we do this?”" }],
+    bodies: [{ en: "“You all look the same.”" }, { py: "Nǐ yìdiǎn dōu bú xiàng huárén.", zh: "你一点都不像华人。", en: "“You’re not very Chinese at all.”" }],
+    belonging: [{ en: "“Where are you really from?”" }, { en: "“So you’re C, right?”" }]
+  };
+
+  var INTRO_PARAS = [
+    "‘Chinese-ness’ is not merely determined by race; it is inherited, taught, performed and assigned. In a melting pot like Singapore, shaped as much by colonial history, state policy and cultural expectations as by heritage, what does it mean to call ourselves Chinese?",
+    "Abroad, Singaporean Chinese are often seen simply as “Chinese”. To many in China, they are not quite Chinese enough. Somewhere in between is an identity of its own: shaped by migrant roots, by learning Malay and English, by festivals kept alive in Chinatown, and by living side by side with Singapore’s many communities.",
+    "“Banana” is a label sometimes given to Singaporean Chinese: yellow outside, white inside. This exhibition borrows it not to accept it, but to ask what really lies beneath.",
+    "You can begin at either end. There is no correct order, just as there is no single way to be Singaporean, or Chinese. As you pass through, consider: which parts of who you are were given to you, and which have you made your own?"
+  ];
+
+  var STOPS = [
+    { key: "funan", label: "Funan end", short: "Funan", pos: [0, ZF - 1.2], yaw: 0 },
+    { key: "roots", work: 0 }, { key: "tongues", work: 1 }, { key: "rites", work: 2 },
+    { key: "bodies", work: 4 }, { key: "belonging", work: 5 },
+    { key: "cityhall", label: "City Hall end", short: "City Hall", pos: [0, ZC + 1.2], yaw: Math.PI }
+  ];
+
+  // ---------- Renderer ----------
+  var canvas = document.getElementById("scene");
+  var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  var scene = new THREE.Scene();
+  scene.background = new THREE.Color("#1d1c19");
+  scene.fog = new THREE.Fog("#2a2822", 22, 70);
+  var camera = new THREE.PerspectiveCamera(70, 1, 0.05, 120);
+  camera.rotation.order = "YXZ";
+  var cam = { x: 0, z: ZF - 1.2, yaw: 0, pitch: 0 };
+  var maxAniso = renderer.capabilities.getMaxAnisotropy();
+
+  scene.add(new THREE.HemisphereLight("#fff6dc", "#6b6352", 0.95));
+  scene.add(new THREE.AmbientLight("#ffffff", 0.3));
+
+  function mkCanvas(w, h) { var c = document.createElement("canvas"); c.width = w; c.height = h; return c; }
+  function mkTex(c) { var t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = maxAniso; return t; }
+  function wrapLines(ctx, text, maxW) {
+    var words = text.split(" "), lines = [], line = "";
+    for (var i = 0; i < words.length; i++) {
+      var test = line ? line + " " + words[i] : words[i];
+      if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = words[i]; } else line = test;
+    }
+    if (line) lines.push(line);
+    return lines;
+  }
+  // A group fixed to a wall. Local +x runs to the viewer's right, +z points into the walkway.
+  function wallGroup(side, z) {
+    var g = new THREE.Group();
+    g.position.set(side === "L" ? -HALF : HALF, 0, z);
+    g.rotation.y = side === "L" ? Math.PI / 2 : -Math.PI / 2;
+    scene.add(g);
+    return g;
+  }
+  function plane(w, h, mat) { return new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat); }
+  function basic(tex, opts) { var m = new THREE.MeshBasicMaterial(Object.assign({ map: tex }, opts || {})); return m; }
+
+  var clickables = [];
+
+  function build() {
+    // Floor
+    var fc = mkCanvas(512, 512), fx = fc.getContext("2d");
+    fx.fillStyle = "#c9c5bb"; fx.fillRect(0, 0, 512, 512);
+    var shades = ["#bdb9ae", "#d6d2c8", "#b3afa4", "#dcd8cf"];
+    for (var i = 0; i < 26; i++) {
+      fx.fillStyle = shades[i % shades.length];
+      var rx = Math.floor(Math.random() * 8) * 64, ry = Math.floor(Math.random() * 16) * 32;
+      fx.fillRect(rx, ry, 64 + Math.floor(Math.random() * 3) * 64, 32);
+    }
+    fx.strokeStyle = "rgba(0,0,0,0.06)"; fx.lineWidth = 1;
+    for (var gx = 0; gx <= 512; gx += 64) { fx.beginPath(); fx.moveTo(gx, 0); fx.lineTo(gx, 512); fx.stroke(); }
+    for (var gy = 0; gy <= 512; gy += 32) { fx.beginPath(); fx.moveTo(0, gy); fx.lineTo(512, gy); fx.stroke(); }
+    var ft = mkTex(fc); ft.wrapS = ft.wrapT = THREE.RepeatWrapping; ft.repeat.set(W / 4, LEN / 4);
+    var floor = plane(W, LEN, new THREE.MeshLambertMaterial({ map: ft }));
+    floor.rotation.x = -Math.PI / 2; floor.position.set(0, 0, ZMID); scene.add(floor);
+    var line = plane(0.1, LEN, new THREE.MeshBasicMaterial({ color: "#3b3830" }));
+    line.rotation.x = -Math.PI / 2; line.position.set(0, 0.003, ZMID); scene.add(line);
+
+    // Ceiling
+    var ceil = plane(W, LEN, new THREE.MeshLambertMaterial({ color: "#3a3833" }));
+    ceil.rotation.x = Math.PI / 2; ceil.position.set(0, H, ZMID); scene.add(ceil);
+    var stripMat = new THREE.MeshBasicMaterial({ color: "#fff9e6" });
+    var stripGeo = new THREE.BoxGeometry(1.5, 0.04, 0.1);
+    for (var sz = ZF - 2; sz > ZC + 1; sz -= 2.6) {
+      var s1 = new THREE.Mesh(stripGeo, stripMat); s1.position.set(-1.4, H - 0.05, sz); s1.rotation.y = 0.25; scene.add(s1);
+      var s2 = new THREE.Mesh(stripGeo, stripMat); s2.position.set(1.4, H - 0.05, sz); s2.rotation.y = -0.25; scene.add(s2);
+    }
+
+    // Yellow walls: panels with seams, dark skirting and top band
+    var wc = mkCanvas(256, 368), wx = wc.getContext("2d"), pxPerM = 368 / H;
+    wx.fillStyle = YELLOW; wx.fillRect(0, 0, 256, 368);
+    wx.fillStyle = "#d6a71f"; wx.fillRect(0, 0, 3, 368); wx.fillRect(253, 0, 3, 368);
+    wx.fillStyle = "#2f2d28"; wx.fillRect(0, 368 - 0.16 * pxPerM, 256, 0.16 * pxPerM);
+    wx.fillRect(0, 0, 256, 0.28 * pxPerM);
+    var wt = mkTex(wc); wt.wrapS = THREE.RepeatWrapping; wt.repeat.set(LEN / 2.5, 1);
+    var wallMat = new THREE.MeshLambertMaterial({ map: wt });
+    ["L", "R"].forEach(function (side) {
+      var wl = plane(LEN, H, wallMat);
+      wl.rotation.y = side === "L" ? Math.PI / 2 : -Math.PI / 2;
+      wl.position.set(side === "L" ? -HALF : HALF, H / 2, ZMID); scene.add(wl);
+    });
+
+    // Black steel columns, kept clear of the works
+    var featureZ = WORKS.map(function (w) { return w.z; }).concat([-3.4, ZC + 3.4, -58.5]);
+    var colMat = new THREE.MeshLambertMaterial({ color: "#151412" });
+    for (var cz = ZF - 0.5; cz > ZC; cz -= 5) {
+      var clear = featureZ.every(function (f) { return Math.abs(f - cz) > 1.9; });
+      if (!clear) continue;
+      [-HALF + 0.08, HALF - 0.08].forEach(function (x) {
+        var col = new THREE.Mesh(new THREE.BoxGeometry(0.14, H, 0.14), colMat); col.position.set(x, H / 2, cz); scene.add(col);
+      });
+      var beam = new THREE.Mesh(new THREE.BoxGeometry(W, 0.12, 0.12), colMat); beam.position.set(0, H - 0.06, cz); scene.add(beam);
+    }
+
+    // End walls with doorways and signs
+    endWall(ZF, Math.PI, "Funan", "To Funan · North Bridge Road");
+    endWall(ZC, 0, "City Hall MRT", "To trains · NS / EW lines");
+
+    // Works
+    WORKS.forEach(function (w, i) { buildCase(w, i); });
+    Object.keys(REMARKS).forEach(function (k) {
+      var z = WORKS.filter(function (w) { return w.layer === k; })[0].z;
+      remark(wallGroup("L", z), REMARKS[k][0]);
+      remark(wallGroup("R", z), REMARKS[k][1]);
+    });
+
+    // Video screen and QR beside No. 11
+    var g11 = wallGroup("R", -56);
+    var vid = videoScreen(); vid.position.set(-1.85, 1.62, 0.04); g11.add(vid);
+    vid.userData = { kind: "video" }; clickables.push(vid);
+    var q = qrTag("Audio for the video"); q.position.set(-1.85, 0.92, 0.03); g11.add(q);
+
+    // Intro text and response screens at both ends
+    var introF = introBoard(); var gF = wallGroup("L", -3.4); introF.position.set(0, 1.7, 0.03); gF.add(introF);
+    introF.userData = { kind: "intro" }; clickables.push(introF);
+    var gFr = wallGroup("R", -3.4); var rF = responseScreen(); rF.mesh.position.set(0, 1.65, 0.04); gFr.add(rF.mesh);
+    rF.mesh.userData = { kind: "responses" }; clickables.push(rF.mesh);
+    var qF = qrTag("Answer the question"); qF.position.set(1.35, 1.25, 0.03); gFr.add(qF);
+
+    var introC = introBoard(); var gC = wallGroup("R", ZC + 3.4); introC.position.set(0, 1.7, 0.03); gC.add(introC);
+    introC.userData = { kind: "intro" }; clickables.push(introC);
+    var gCl = wallGroup("L", ZC + 3.4); var rC = responseScreen(); rC.mesh.position.set(0, 1.65, 0.04); gCl.add(rC.mesh);
+    rC.mesh.userData = { kind: "responses" }; clickables.push(rC.mesh);
+    var qC = qrTag("Answer the question"); qC.position.set(1.35, 1.25, 0.03); gCl.add(qC);
+    screens.push(rF, rC);
+  }
+
+  function endWall(z, rotY, name, sub) {
+    var mat = new THREE.MeshLambertMaterial({ color: "#34322c" });
+    var g = new THREE.Group(); g.position.set(0, 0, z); g.rotation.y = rotY; scene.add(g);
+    var dw = 3, dh = 2.8, side = (W - dw) / 2;
+    var a = plane(side, H, mat); a.position.set(-(dw / 2 + side / 2), H / 2, 0); g.add(a);
+    var b = plane(side, H, mat); b.position.set(dw / 2 + side / 2, H / 2, 0); g.add(b);
+    var c = plane(dw, H - dh, mat); c.position.set(0, dh + (H - dh) / 2, 0); g.add(c);
+    var glow = plane(dw, dh, new THREE.MeshBasicMaterial({ color: "#f4efe1" })); glow.position.set(0, dh / 2, -0.6); g.add(glow);
+    var sc = mkCanvas(1024, 192), sx = sc.getContext("2d");
+    sx.fillStyle = "#121210"; sx.fillRect(0, 0, 1024, 192);
+    sx.fillStyle = "#ffffff"; sx.font = "800 84px " + FONT_D; sx.textBaseline = "middle"; sx.fillText(name, 44, 78);
+    sx.fillStyle = "#c9c3b0"; sx.font = "500 36px " + FONT_B; sx.fillText(sub, 46, 148);
+    sx.fillStyle = YELLOW; sx.fillRect(1024 - 40, 0, 40, 192);
+    var sign = plane(2.6, 0.49, basic(mkTex(sc))); sign.position.set(0, dh + 0.33, 0.02); g.add(sign);
+  }
+
+  function placeholderCanvas(w) {
+    var ar = w.aw / w.ah, cw = 768, chh = Math.round(cw / ar);
+    if (chh > 900) { chh = 900; cw = Math.round(chh * ar); }
+    var c = mkCanvas(cw, chh), x = c.getContext("2d");
+    x.fillStyle = "#d9d4c8"; x.fillRect(0, 0, cw, chh);
+    x.strokeStyle = "#9d978a"; x.lineWidth = 6; x.strokeRect(14, 14, cw - 28, chh - 28);
+    x.strokeStyle = "rgba(0,0,0,0.08)"; x.lineWidth = 2;
+    x.beginPath(); x.moveTo(14, 14); x.lineTo(cw - 14, chh - 14); x.moveTo(cw - 14, 14); x.lineTo(14, chh - 14); x.stroke();
+    var pad = 48, maxW = cw - pad * 2;
+    x.fillStyle = "#2c2a24"; x.textAlign = "center"; x.textBaseline = "top";
+    var size = Math.max(30, Math.min(56, cw / 12));
+    x.font = "italic 500 " + size + "px " + FONT_D;
+    var lines = wrapLines(x, w.title, maxW);
+    var blockH = lines.length * size * 1.15 + size * 1.9;
+    var y = (chh - blockH) / 2;
+    lines.forEach(function (l) { x.fillText(l, cw / 2, y); y += size * 1.15; });
+    x.font = "500 " + Math.round(size * 0.62) + "px " + FONT_B; x.fillStyle = "#4d4a40";
+    x.fillText(w.artist + " · " + w.year, cw / 2, y + size * 0.3);
+    x.fillStyle = "#6e6a5d"; x.font = "500 " + Math.round(size * 0.5) + "px " + FONT_B;
+    return c;
+  }
+
+  function buildCase(w, i) {
+    var g = wallGroup(w.side, w.z);
+    var depth = 0.32;
+    var inner = new THREE.MeshLambertMaterial({ color: "#e9e6de" });
+    var back = plane(w.cw, w.ch, inner); back.position.set(0, w.y, 0.01); g.add(back);
+    var frameMat = new THREE.MeshLambertMaterial({ color: "#1b1a17" });
+    var t = 0.04;
+    [[w.cw + t, t, 0, w.ch / 2], [w.cw + t, t, 0, -w.ch / 2]].forEach(function (p) {
+      var bx = new THREE.Mesh(new THREE.BoxGeometry(p[0], p[1], depth), frameMat);
+      bx.position.set(0, w.y + p[3], depth / 2); g.add(bx);
+    });
+    [-w.cw / 2, w.cw / 2].forEach(function (px) {
+      var bx = new THREE.Mesh(new THREE.BoxGeometry(t, w.ch, depth), frameMat);
+      bx.position.set(px, w.y, depth / 2); g.add(bx);
+    });
+    var sidesMat = new THREE.MeshLambertMaterial({ color: "#d9d5cb", side: THREE.DoubleSide });
+    var top = plane(w.cw, depth, sidesMat); top.rotation.x = Math.PI / 2; top.position.set(0, w.y + w.ch / 2 - t / 2, depth / 2); g.add(top);
+    var lamp = plane(w.cw * 0.8, 0.03, new THREE.MeshBasicMaterial({ color: "#fffdf3" }));
+    lamp.rotation.x = Math.PI / 2; lamp.position.set(0, w.y + w.ch / 2 - t / 2 - 0.005, depth * 0.8); g.add(lamp);
+
+    var c = placeholderCanvas(w), tex = mkTex(c);
+    var art = plane(w.aw, w.ah, basic(tex)); art.position.set(0, w.y, 0.03); g.add(art);
+    var glass = plane(w.cw, w.ch, new THREE.MeshPhongMaterial({ color: "#ffffff", transparent: true, opacity: 0.08, shininess: 120, specular: "#ffffff", depthWrite: false }));
+    glass.position.set(0, w.y, depth); g.add(glass);
+    art.userData = { kind: "work", i: i }; glass.userData = { kind: "work", i: i };
+    clickables.push(glass);
+    w.mesh = art; w.canvasAR = c.width / c.height;
+
+    var cap = caption(w); cap.position.set(w.cw / 2 + 0.5, 1.45, 0.02); g.add(cap);
+    cap.userData = { kind: "work", i: i }; clickables.push(cap);
+  }
+
+  function caption(w) {
+    var L = LAYERS[w.layer];
+    var c = mkCanvas(512, 720), x = c.getContext("2d");
+    x.fillStyle = "#fbf8ee"; x.fillRect(0, 0, 512, 720);
+    x.fillStyle = "#1f1c14"; x.textBaseline = "alphabetic";
+    x.font = "800 104px " + FONT_D; x.fillText(L.py, 32, 124);
+    x.font = "500 34px " + FONT_D; x.fillStyle = "#5f5947"; x.fillText(L.zh + "   " + L.en.toUpperCase(), 34, 176);
+    x.fillStyle = "#1f1c14"; x.fillRect(32, 206, 448, 3);
+    x.font = "600 30px " + FONT_B; x.fillText(w.artist, 32, 262);
+    x.font = "400 28px " + FONT_B; x.fillStyle = "#5f5947"; x.fillText(w.artistZh, 32, 300);
+    x.fillStyle = "#1f1c14"; x.font = "italic 500 34px " + FONT_D;
+    var y = 360;
+    wrapLines(x, w.title, 448).forEach(function (l) { x.fillText(l, 32, y); y += 42; });
+    x.font = "400 28px " + FONT_B; x.fillText(w.year, 32, y + 6); y += 52;
+    x.fillStyle = "#5f5947"; x.font = "400 22px " + FONT_B;
+    wrapLines(x, w.medium + ". " + w.coll + ".", 448).forEach(function (l) { x.fillText(l, 32, y); y += 30; });
+    return plane(0.6, 0.84, basic(mkTex(c)));
+  }
+
+  function remark(g, r) {
+    var c = mkCanvas(1024, 256), x = c.getContext("2d");
+    x.clearRect(0, 0, 1024, 256);
+    x.fillStyle = "#1f1c14"; x.textAlign = "center"; x.textBaseline = "middle";
+    if (r.py) {
+      var s = 64; x.font = "800 " + s + "px " + FONT_D;
+      while (x.measureText(r.py).width > 960 && s > 34) { s -= 2; x.font = "800 " + s + "px " + FONT_D; }
+      x.fillText(r.py, 512, 72);
+      x.font = "500 38px " + FONT_D; x.fillText(r.zh, 512, 150);
+      x.font = "italic 400 32px " + FONT_B; x.fillStyle = "#4a4434"; x.fillText(r.en, 512, 210);
+    } else {
+      var s2 = 78; x.font = "italic 800 " + s2 + "px " + FONT_D;
+      while (x.measureText(r.en).width > 960 && s2 > 40) { s2 -= 2; x.font = "italic 800 " + s2 + "px " + FONT_D; }
+      x.fillText(r.en, 512, 128);
+    }
+    var m = plane(2.6, 0.65, basic(mkTex(c), { transparent: true }));
+    m.position.set(0, 3.0, 0.02); g.add(m);
+  }
+
+  function introBoard() {
+    var c = mkCanvas(1024, 1180), x = c.getContext("2d");
+    x.fillStyle = "#fbf8ee"; x.fillRect(0, 0, 1024, 1180);
+    x.fillStyle = "#1f1c14"; x.font = "800 70px " + FONT_D; x.fillText("The Yellow Banana", 56, 110);
+    x.font = "500 34px " + FONT_D; x.fillStyle = "#5f5947"; x.fillText("Chinese-ness In Between", 58, 160);
+    x.fillStyle = YELLOW; x.fillRect(56, 186, 120, 10);
+    var paras = INTRO_PARAS;
+    var unusedParas = [
+      "Abroad, Singaporean Chinese are often seen simply as “Chinese”. To many in China, they are not quite Chinese enough. Somewhere in between is an identity of its own: shaped by migrant roots, by learning Malay and English, by festivals kept alive in Chinatown, and by living side by side with Singapore’s many communities.",
+      "“Banana” is a label sometimes given to Singaporean Chinese: yellow outside, white inside. This exhibition borrows it not to accept it, but to ask what really lies beneath.",
+      "You can begin at either end. There is no correct order. As you pass through, consider: which parts of who you are were given to you, and which have you made your own?"
+    ];
+    var y = 252;
+    paras.forEach(function (p, pi) {
+      x.fillStyle = "#1f1c14";
+      x.font = (pi === 0 ? "600 30px " : "400 27px ") + FONT_B;
+      var lh = pi === 0 ? 42 : 38;
+      wrapLines(x, p, 912).forEach(function (l) { x.fillText(l, 56, y); y += lh; });
+      y += 22;
+    });
+    return plane(2.3, 2.65, basic(mkTex(c)));
+  }
+
+  var screens = [];
+  var SAMPLE = ["My Ah Ma’s cooking", "Reunion dinner every year", "I can’t read Chinese, but I’m still Chinese",
+    "Honestly, I’m not sure", "Being called ‘Chinese’ overseas", "Speaking Hokkien with my grandfather",
+    "My surname, mostly", "Mooncakes and lanterns", "The ‘C’ on my IC"];
+  function responseScreen() {
+    var c = mkCanvas(1024, 600), tex = mkTex(c);
+    var obj = { canvas: c, tex: tex, offset: 0 };
+    drawResponses(obj);
+    obj.mesh = plane(2.0, 1.17, basic(tex));
+    return obj;
+  }
+  function drawResponses(o) {
+    var x = o.canvas.getContext("2d");
+    x.fillStyle = "#121210"; x.fillRect(0, 0, 1024, 600);
+    x.fillStyle = YELLOW; x.font = "800 60px " + FONT_D; x.fillText("What makes you Chinese?", 48, 96);
+    x.fillStyle = "#8f8a7a"; x.font = "500 24px " + FONT_B; x.fillText("SAMPLE RESPONSES · ANONYMOUS · MODERATED", 50, 140);
+    x.font = "500 36px " + FONT_B;
+    for (var i = 0; i < 6; i++) {
+      var r = SAMPLE[(o.offset + i) % SAMPLE.length];
+      x.fillStyle = i === 0 ? "#ffffff" : "rgba(255,255,255," + (0.85 - i * 0.12) + ")";
+      x.fillText("“" + r + "”", 50, 210 + i * 64);
+    }
+    o.tex.needsUpdate = true;
+  }
+  function videoScreen() {
+    var c = mkCanvas(1024, 576), x = c.getContext("2d");
+    x.fillStyle = "#0e0e0c"; x.fillRect(0, 0, 1024, 576);
+    x.fillStyle = "rgba(232,185,49,0.18)"; x.fillRect(0, 0, 1024, 576);
+    x.fillStyle = "#ffffff"; x.beginPath(); x.moveTo(470, 228); x.lineTo(470, 348); x.lineTo(574, 288); x.closePath(); x.fill();
+    x.font = "600 30px " + FONT_B; x.fillText("Archival video, 1997", 40, 500);
+    x.fillStyle = "#c9c3b0"; x.font = "400 24px " + FONT_B; x.fillText("Lee Wen at The Substation · National Gallery Singapore Archive", 40, 540);
+    x.fillStyle = "#3a382f"; x.fillRect(40, 450, 944, 6); x.fillStyle = YELLOW; x.fillRect(40, 450, 380, 6);
+    return plane(1.4, 0.79, basic(mkTex(c)));
+  }
+  function qrTag(label) {
+    var c = mkCanvas(512, 256), x = c.getContext("2d");
+    x.fillStyle = "#fbf8ee"; x.fillRect(0, 0, 512, 256);
+    x.fillStyle = "#1f1c14"; x.fillRect(24, 24, 208, 208); x.fillStyle = "#fbf8ee"; x.fillRect(40, 40, 176, 176);
+    x.fillStyle = "#1f1c14";
+    [[48, 48], [160, 48], [48, 160]].forEach(function (p) { x.fillRect(p[0], p[1], 48, 48); x.fillStyle = "#fbf8ee"; x.fillRect(p[0] + 10, p[1] + 10, 28, 28); x.fillStyle = "#1f1c14"; x.fillRect(p[0] + 18, p[1] + 18, 12, 12); });
+    x.font = "800 34px " + FONT_D; x.textAlign = "center"; x.fillText("QR", 186, 196);
+    x.textAlign = "left"; x.font = "700 30px " + FONT_D; x.fillText("Scan", 256, 92);
+    x.font = "400 24px " + FONT_B; x.fillStyle = "#5f5947";
+    var y = 132; wrapLines(x, label, 232).forEach(function (l) { x.fillText(l, 256, y); y += 32; });
+    return plane(0.6, 0.3, basic(mkTex(c)));
+  }
+
+  // ---------- UI ----------
+  var chipsEl = document.getElementById("chips");
+  var chipEls = [];
+  STOPS.forEach(function (s, i) {
+    var b = document.createElement("button"); b.className = "chip"; b.type = "button";
+    if (s.work != null) {
+      var L = LAYERS[s.key];
+      var em = document.createElement("i"); em.textContent = L.py; b.appendChild(em);
+      b.appendChild(document.createTextNode(L.en));
+    } else { b.textContent = s.label; }
+    b.addEventListener("click", function () { flyTo(i); });
+    chipsEl.appendChild(b); chipEls.push(b);
+  });
+
+  var rail = document.getElementById("rail"), dot = document.getElementById("dot"), hereLabel = document.getElementById("hereLabel");
+  WORKS.forEach(function (w) {
+    if (w.id === "wu") return;
+    var tk = document.createElement("div"); tk.className = "tick"; tk.style.left = (frac(w.z) * 100) + "%"; rail.appendChild(tk);
+  });
+  function frac(z) { return Math.min(1, Math.max(0, (ZMAX - z) / (ZMAX - ZMIN))); }
+
+  function stopPose(i) {
+    var s = STOPS[i];
+    if (s.work == null) return { x: s.pos[0], z: s.pos[1], yaw: s.yaw, pitch: 0 };
+    var w = WORKS[s.work];
+    var span = w.cw + 1.3;
+    var aspect = window.innerWidth / window.innerHeight;
+    var hfov = 2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * aspect);
+    var d = Math.min(3.0, Math.max(1.9, (span / 2) / Math.tan(hfov / 2) + 0.2));
+    var dir = w.side === "L" ? 1 : -1;
+    var x = w.side === "L" ? -HALF + d : HALF - d;
+    var zShift = w.side === "L" ? -0.35 : 0.35;
+    return { x: x, z: w.z + zShift, yaw: dir * Math.PI / 2, pitch: w.y < 1.4 ? -0.08 : 0.02 };
+  }
+
+  var tween = null;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function angleDiff(a, b) { var d = b - a; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; return d; }
+  function animateTo(p, ms) {
+    if (reduce) { cam.x = p.x; cam.z = p.z; cam.yaw = p.yaw; cam.pitch = p.pitch; tween = null; return; }
+    tween = { from: { x: cam.x, z: cam.z, yaw: cam.yaw, pitch: cam.pitch }, dyaw: angleDiff(cam.yaw, p.yaw), to: p, t0: performance.now(), ms: ms };
+  }
+  function flyTo(i) {
+    closeSheet();
+    var p = stopPose(i);
+    var dist = Math.hypot(p.x - cam.x, p.z - cam.z);
+    animateTo(p, Math.min(2600, 700 + dist * 45));
+  }
+
+  // Sheet
+  var sheet = document.getElementById("sheet");
+  var fileInput = null;
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function closeSheet() { sheet.hidden = true; sheet.textContent = ""; }
+  function openWork(i) {
+    var w = WORKS[i], L = LAYERS[w.layer];
+    sheet.textContent = "";
+    var lay = el("div", "layer"); lay.appendChild(el("span", "py", L.py)); lay.appendChild(el("span", "zh", L.zh)); lay.appendChild(el("span", "en", L.en));
+    sheet.appendChild(lay);
+    var h = el("h2", null, w.title); h.id = "sheetTitle"; sheet.appendChild(h);
+    sheet.appendChild(el("p", "who", w.artist + " " + w.artistZh + " · " + w.year));
+    var dl = el("dl");
+    [["Medium", w.medium], ["Size", w.size], ["Collection", w.coll], ["Placement", (w.side === "L" ? "Left" : "Right") + " wall, heading to City Hall"]].forEach(function (r) {
+      dl.appendChild(el("dt", null, r[0])); dl.appendChild(el("dd", null, r[1]));
+    });
+    sheet.appendChild(dl);
+    sheet.appendChild(el("p", "note", w.note));
+    var act = el("div", "actions");
+    if (w.layer === "rites") {
+      var tb = el("button", "btn", "Turn to the facing work"); tb.type = "button";
+      tb.addEventListener("click", function () { closeSheet(); turnAround(); }); act.appendChild(tb);
+    }
+    var cb = el("button", "btn", "Close"); cb.type = "button"; cb.addEventListener("click", closeSheet); act.appendChild(cb);
+    sheet.appendChild(act);
+    sheet.hidden = false;
+  }
+  function openInfo(kind) {
+    var copy = {
+      intro: ["Introductory wall text", "Placed at both entrances so that every passerby understands the exhibition's purpose, whichever end they enter from. It states the rationale plainly and invites, rather than assumes, a shared identity."],
+      responses: ["What makes you Chinese?", "A screen at each end shows this question beside a QR code that links to a one-question survey. Answers are anonymous and moderated, and they scroll across the screen. The lines shown here are samples written for this mock-up."],
+      video: ["Archival video of No. 11", "The National Gallery Singapore archive holds a recording of the 1997 performance. It is screened here with the permission of the Gallery and the artist's estate. The audio plays on the viewer's own phone through the QR code, so the walkway stays quiet."]
+    }[kind];
+    sheet.textContent = "";
+    var h = el("h2", null, copy[0]); h.id = "sheetTitle"; h.style.fontStyle = "normal"; h.style.marginTop = "0"; sheet.appendChild(h);
+    if (kind === "intro") INTRO_PARAS.forEach(function (p) { sheet.appendChild(el("p", "note", p)); });
+    sheet.appendChild(el("p", kind === "intro" ? "fine" : "note", copy[1]));
+    var cb = el("button", "btn", "Close"); cb.type = "button"; cb.addEventListener("click", closeSheet);
+    var act = el("div", "actions"); act.appendChild(cb); sheet.appendChild(act);
+    sheet.hidden = false;
+  }
+  function applyImage(i, img) {
+    var w = WORKS[i];
+    var cw = 1024, chh = Math.round(cw / w.canvasAR);
+    var c = mkCanvas(cw, chh), x = c.getContext("2d");
+    // Cover-fit: fill the artwork's real proportions, cropping any edges of the photo.
+    var s = Math.max(cw / img.width, chh / img.height);
+    var dw = img.width * s, dh = img.height * s;
+    x.drawImage(img, (cw - dw) / 2, (chh - dh) / 2, dw, dh);
+    var old = w.mesh.material.map; w.mesh.material.map = mkTex(c); w.mesh.material.needsUpdate = true;
+    if (old) old.dispose();
+  }
+  function loadPhoto(i, file) {
+    var w = WORKS[i], reader = new FileReader();
+    reader.onload = function () {
+      var img = new Image();
+      img.onload = function () { applyImage(i, img); };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  }
+  function turnAround() { animateTo({ x: cam.x, z: cam.z, yaw: cam.yaw + Math.PI, pitch: cam.pitch }, 700); }
+
+  // ---------- Input ----------
+  var drag = null, ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  canvas.addEventListener("pointerdown", function (e) {
+    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, t: performance.now() };
+    canvas.setPointerCapture(e.pointerId);
+  });
+  canvas.addEventListener("pointermove", function (e) {
+    if (!drag || drag.id !== e.pointerId) return;
+    var dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.x = e.clientX; drag.y = e.clientY;
+    tween = null;
+    var k = 0.0042 * (camera.fov / 70);
+    cam.yaw += dx * k; cam.pitch = Math.max(-0.7, Math.min(0.7, cam.pitch + dy * k));
+  });
+  function endDrag(e) {
+    if (!drag || drag.id !== e.pointerId) return;
+    var moved = Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy);
+    if (moved < 8 && performance.now() - drag.t < 450) pick(e.clientX, e.clientY);
+    drag = null;
+  }
+  canvas.addEventListener("pointerup", endDrag);
+  canvas.addEventListener("pointercancel", function () { drag = null; });
+  function pick(px, py) {
+    var r = canvas.getBoundingClientRect();
+    ndc.set(((px - r.left) / r.width) * 2 - 1, -((py - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    var hit = ray.intersectObjects(clickables, false)[0];
+    if (!hit || hit.distance > 9) return;
+    var u = hit.object.userData;
+    if (u.kind === "work") openWork(u.i); else openInfo(u.kind);
+  }
+
+  var move = 0, strafe = 0, turnKey = 0;
+  function holdBtn(id, val) {
+    var b = document.getElementById(id);
+    function on(e) { e.preventDefault(); tween = null; move = val; b.setPointerCapture && b.setPointerCapture(e.pointerId); }
+    function off() { if (move === val) move = 0; }
+    b.addEventListener("pointerdown", on); b.addEventListener("pointerup", off);
+    b.addEventListener("pointercancel", off); b.addEventListener("lostpointercapture", off);
+    b.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+  }
+  holdBtn("fwd", 1); holdBtn("back", -1);
+  document.getElementById("turn").addEventListener("click", turnAround);
+  var keys = {};
+  window.addEventListener("keydown", function (e) {
+    if (e.target && (e.target.tagName === "INPUT")) return;
+    keys[e.key.toLowerCase()] = true;
+    if (e.key === "Escape") closeSheet();
+  });
+  window.addEventListener("keyup", function (e) { keys[e.key.toLowerCase()] = false; });
+
+  var intro = document.getElementById("intro");
+  document.getElementById("startBtn").addEventListener("click", function () { intro.hidden = true; });
+  document.getElementById("helpBtn").addEventListener("click", function () { intro.hidden = false; });
+
+  // ---------- Loop ----------
+  function resize() {
+    var w = window.innerWidth, h = window.innerHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.fov = camera.aspect < 0.8 ? 82 : 66; camera.updateProjectionMatrix();
+  }
+  window.addEventListener("resize", resize);
+
+  var last = performance.now(), screenClock = 0, lastStop = -1;
+  function frame(now) {
+    var dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (tween) {
+      var t = Math.min(1, (now - tween.t0) / tween.ms), e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      cam.x = tween.from.x + (tween.to.x - tween.from.x) * e;
+      cam.z = tween.from.z + (tween.to.z - tween.from.z) * e;
+      cam.yaw = tween.from.yaw + tween.dyaw * e;
+      cam.pitch = tween.from.pitch + (tween.to.pitch - tween.from.pitch) * e;
+      if (t >= 1) tween = null;
+    }
+    var f = move + ((keys["w"] || keys["arrowup"]) ? 1 : 0) - ((keys["s"] || keys["arrowdown"]) ? 1 : 0);
+    var st = ((keys["d"]) ? 1 : 0) - ((keys["a"]) ? 1 : 0);
+    var tk = ((keys["arrowleft"]) ? 1 : 0) - ((keys["arrowright"]) ? 1 : 0);
+    if (f || st || tk) tween = null;
+    cam.yaw += tk * 1.6 * dt;
+    var sp = 2.4 * dt;
+    var fx = -Math.sin(cam.yaw), fz = -Math.cos(cam.yaw);
+    cam.x += (fx * f + -fz * st) * sp; cam.z += (fz * f + fx * st) * sp;
+    cam.x = Math.max(-XLIM, Math.min(XLIM, cam.x)); cam.z = Math.max(ZMIN, Math.min(ZMAX, cam.z));
+    camera.position.set(cam.x, EYE, cam.z); camera.rotation.set(cam.pitch, cam.yaw, 0);
+
+    screenClock += dt;
+    if (screenClock > 2.6) { screenClock = 0; screens.forEach(function (s) { s.offset++; drawResponses(s); }); }
+
+    var fr = frac(cam.z); dot.style.left = (fr * 100) + "%";
+    var near = -1, best = 3.2;
+    STOPS.forEach(function (s, i) {
+      var z = s.work != null ? WORKS[s.work].z : s.pos[1];
+      var d = Math.abs(cam.z - z); if (d < best) { best = d; near = i; }
+    });
+    if (near !== lastStop) {
+      lastStop = near;
+      chipEls.forEach(function (c, i) { c.classList.toggle("on", i === near); });
+      var s = STOPS[near];
+      hereLabel.textContent = near < 0 ? "Between stops" : (s.work != null ? LAYERS[s.key].en + " · " + LAYERS[s.key].zh : s.label);
+    }
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+
+  var fontsReady = (document.fonts && document.fonts.load) ? Promise.all([
+    document.fonts.load("800 40px Archivo"), document.fonts.load("500 40px Archivo"),
+    document.fonts.load("italic 500 40px Archivo"), document.fonts.load("400 20px Inter"), document.fonts.load("600 20px Inter")
+  ]).catch(function () {}) : Promise.resolve();
+  var timeout = new Promise(function (r) { setTimeout(r, 2500); });
+  Promise.race([fontsReady, timeout]).then(function () {
+    build(); resize(); requestAnimationFrame(frame);
+    WORKS.forEach(function (w, i) {
+      var img = new Image();
+      img.onload = function () { applyImage(i, img); };
+      img.src = "works/" + w.id + ".jpg";
+    });
+  });
+})();
+</script>
+
+</html>

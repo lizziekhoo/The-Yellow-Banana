@@ -46,6 +46,7 @@
   --scene: #1a1916;
   color-scheme: dark;
 }
+[hidden] { display: none !important; }
 html, body { height: 100%; }
 body {
   margin: 0; overflow: hidden; background: var(--scene); color: var(--ui-fg);
@@ -193,7 +194,21 @@ dd { margin: 0; min-width: 0; font-variant-numeric: tabular-nums; }
   </div>
 </div>
 
+<script>
+  // Set up the welcome card first, so its buttons work even if the 3D view fails to load.
+  (function () {
+    var intro = document.getElementById("intro");
+    document.getElementById("startBtn").addEventListener("click", function () { intro.hidden = true; intro.style.display = "none"; });
+    document.getElementById("helpBtn").addEventListener("click", function () { intro.hidden = false; intro.style.display = ""; });
+  })();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+  if (typeof THREE === "undefined") {
+    var b = document.querySelector(".brand span");
+    if (b) b.textContent = "The 3D view could not load. Check your connection and refresh.";
+  }
+</script>
 <script>
 (function () {
   "use strict";
@@ -733,9 +748,6 @@ dd { margin: 0; min-width: 0; font-variant-numeric: tabular-nums; }
   });
   window.addEventListener("keyup", function (e) { keys[e.key.toLowerCase()] = false; });
 
-  var intro = document.getElementById("intro");
-  document.getElementById("startBtn").addEventListener("click", function () { intro.hidden = true; });
-  document.getElementById("helpBtn").addEventListener("click", function () { intro.hidden = false; });
 
   // ---------- Loop ----------
   function resize() {
